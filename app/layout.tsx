@@ -4,28 +4,14 @@ import './globals.css';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { Toaster } from 'react-hot-toast';
 
+// Force dynamic rendering to avoid SSR issues
+export const dynamic = 'force-dynamic';
+
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'CAPS CA - Chartered Accountancy Learning Platform',
-  description: 'Comprehensive learning platform for CA students with mock tests, study materials, and performance analytics.',
-  authors: [{ name: 'CAPS Team' }],
-  keywords: 'CA, Chartered Accountancy, CA Foundation, CA Intermediate, CA Final, mock tests, study materials, learning analytics',
-  openGraph: {
-    title: 'CAPS CA - Chartered Accountancy Learning Platform',
-    description: 'Comprehensive learning platform for CA students with mock tests, study materials, and performance analytics.',
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'CAPS CA - Chartered Accountancy Learning Platform',
-    description: 'Comprehensive learning platform for CA students with mock tests, study materials, and performance analytics.',
-  },
-  icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
-  },
+  title: 'CAPS App - Chartered Accountancy Learning Platform',
+  description: 'A comprehensive learning platform for chartered accountancy students',
 };
 
 export default function RootLayout({

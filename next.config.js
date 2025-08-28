@@ -8,6 +8,12 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@supabase/supabase-js'],
   },
+  // Disable static generation for all pages
+  trailingSlash: true,
+  // Force all pages to be dynamic
+  generateStaticParams: async () => {
+    return [];
+  },
 }
 
 module.exports = nextConfig 
