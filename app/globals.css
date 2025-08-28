@@ -1,0 +1,259 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-surface-50 text-surface-900;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-surface-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-300 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-surface-400;
+  }
+}
+
+@layer components {
+  /* Button styles */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500;
+  }
+  
+  .btn-outline {
+    @apply btn border border-surface-300 bg-white text-surface-700 hover:bg-surface-50 focus:ring-primary-500;
+  }
+  
+  .btn-ghost {
+    @apply btn text-surface-600 hover:bg-surface-100 focus:ring-primary-500;
+  }
+  
+  .btn-danger {
+    @apply btn bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500;
+  }
+  
+  .btn-success {
+    @apply btn bg-success-600 text-white hover:bg-success-700 focus:ring-success-500;
+  }
+  
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-xl shadow-soft border border-surface-200;
+  }
+  
+  .card-header {
+    @apply px-6 py-4 border-b border-surface-200;
+  }
+  
+  .card-body {
+    @apply px-6 py-4;
+  }
+  
+  .card-footer {
+    @apply px-6 py-4 border-t border-surface-200 bg-surface-50;
+  }
+  
+  /* Form styles */
+  .form-input {
+    @apply block w-full px-3 py-2 border border-surface-300 rounded-lg shadow-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+  }
+  
+  .form-textarea {
+    @apply form-input resize-none;
+  }
+  
+  .form-select {
+    @apply form-input;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-surface-700 mb-1;
+  }
+  
+  .form-error {
+    @apply text-sm text-danger-600 mt-1;
+  }
+  
+  .form-help {
+    @apply text-sm text-surface-500 mt-1;
+  }
+  
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-primary {
+    @apply badge bg-primary-100 text-primary-800;
+  }
+  
+  .badge-secondary {
+    @apply badge bg-secondary-100 text-secondary-800;
+  }
+  
+  .badge-success {
+    @apply badge bg-success-100 text-success-800;
+  }
+  
+  .badge-warning {
+    @apply badge bg-warning-100 text-warning-800;
+  }
+  
+  .badge-danger {
+    @apply badge bg-danger-100 text-danger-800;
+  }
+  
+  .badge-surface {
+    @apply badge bg-surface-100 text-surface-800;
+  }
+  
+  /* Navigation styles */
+  .nav-link {
+    @apply flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200;
+  }
+  
+  .nav-link-active {
+    @apply nav-link bg-primary-100 text-primary-700;
+  }
+  
+  .nav-link-inactive {
+    @apply nav-link text-surface-600 hover:text-surface-900 hover:bg-surface-100;
+  }
+  
+  /* Test player specific styles */
+  .question-option {
+    @apply block w-full p-4 text-left border border-surface-300 rounded-lg cursor-pointer transition-all duration-200 hover:border-primary-300 hover:bg-primary-50;
+  }
+  
+  .question-option-selected {
+    @apply question-option border-primary-500 bg-primary-50 text-primary-700;
+  }
+  
+  .question-option-correct {
+    @apply question-option border-success-500 bg-success-50 text-success-700;
+  }
+  
+  .question-option-incorrect {
+    @apply question-option border-danger-500 bg-danger-50 text-danger-700;
+  }
+  
+  /* Timer styles */
+  .timer {
+    @apply font-mono text-lg font-semibold;
+  }
+  
+  .timer-warning {
+    @apply timer text-warning-600;
+  }
+  
+  .timer-danger {
+    @apply timer text-danger-600 animate-pulse;
+  }
+  
+  /* Progress bar styles */
+  .progress-bar {
+    @apply w-full bg-surface-200 rounded-full h-2;
+  }
+  
+  .progress-fill {
+    @apply h-2 bg-primary-600 rounded-full transition-all duration-300;
+  }
+  
+  /* Loading spinner */
+  .spinner {
+    @apply animate-spin rounded-full border-2 border-surface-300 border-t-primary-600;
+  }
+  
+  /* Toast styles */
+  .toast {
+    @apply fixed top-4 right-4 z-50 p-4 rounded-lg shadow-large max-w-sm;
+  }
+  
+  .toast-success {
+    @apply toast bg-success-600 text-white;
+  }
+  
+  .toast-error {
+    @apply toast bg-danger-600 text-white;
+  }
+  
+  .toast-warning {
+    @apply toast bg-warning-600 text-white;
+  }
+  
+  .toast-info {
+    @apply toast bg-primary-600 text-white;
+  }
+}
+
+@layer utilities {
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  /* Focus utilities */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  /* Print utilities */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+  }
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .dark {
+    @apply bg-surface-900 text-surface-100;
+  }
+  
+  .dark .card {
+    @apply bg-surface-800 border-surface-700;
+  }
+  
+  .dark .form-input {
+    @apply bg-surface-800 border-surface-600 text-surface-100 placeholder-surface-400;
+  }
+  
+  .dark .nav-link-inactive {
+    @apply text-surface-400 hover:text-surface-200 hover:bg-surface-700;
+  }
+} 
