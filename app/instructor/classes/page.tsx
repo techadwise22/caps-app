@@ -1,9 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
-// Disable static generation for this page
-export const dynamic = 'force-dynamic';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ClassSession, ZoomMeeting } from '@/types';

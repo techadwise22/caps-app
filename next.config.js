@@ -3,9 +3,9 @@ const nextConfig = {
   images: {
     domains: ['img.youtube.com', 'i.ytimg.com', 'lh3.googleusercontent.com'],
   },
-  // Disable static generation for pages that use browser APIs
+  // Disable static generation completely to avoid SSR issues
+  output: 'standalone',
   experimental: {
-    // This will help with SSR issues
     serverComponentsExternalPackages: ['@supabase/supabase-js'],
   },
 }
