@@ -52,7 +52,7 @@ export default function Logo({ size = 'md', className = '', showText = true }: L
       {showText && (
         <div className="flex flex-col">
           <span className={`font-bold text-blue-900 ${textSizes[size]}`}>CAPS Learn</span>
-          <span className="text-xs text-gray-500">CA Coaching Centre</span>
+          <span className="text-xs text-gray-500">C's Academy for Professional Studies</span>
         </div>
       )}
     </div>

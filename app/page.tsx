@@ -103,10 +103,10 @@ export default function HomePage() {
             Master Your
             <span className="text-yellow-600"> CA Journey</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Comprehensive learning platform by <span className="font-semibold text-blue-800">C.A.C.S. Academy of Professional Students in India</span>. 
-            Access mock tests, study materials, and track your progress across CA Foundation, Intermediate, and Final levels.
-          </p>
+                      <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+              Comprehensive learning platform by <span className="font-semibold text-blue-800">C's Academy for Professional Studies</span>. 
+              Access mock tests, study materials, and track your progress across CA Foundation, Intermediate, and Final levels.
+            </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => setActiveTab('login')}
@@ -291,7 +291,7 @@ export default function HomePage() {
               <h3 className="text-2xl font-bold">CAPS Learn</h3>
             </div>
             <p className="text-gray-400 mb-4">
-              Empowering CA students to achieve excellence in their professional journey by C.A.C.S. Academy of Professional Students in India
+              Empowering CA students to achieve excellence in their professional journey by C's Academy for Professional Studies
             </p>
             <div className="flex justify-center space-x-6 text-surface-400">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>

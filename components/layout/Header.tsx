@@ -42,7 +42,7 @@ export default function Header() {
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-blue-900">CAPS Learn</span>
-                <span className="text-xs text-gray-500">CA Coaching Centre</span>
+                <span className="text-xs text-gray-500">C's Academy for Professional Studies</span>
               </div>
             </Link>
           </div>

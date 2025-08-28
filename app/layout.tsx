@@ -11,19 +11,19 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'CAPS Learn - Chartered Accountancy Learning Platform',
-  description: 'A comprehensive learning platform for chartered accountancy students by C.A.C.S. Academy of Professional Students in India',
+  description: 'A comprehensive learning platform for chartered accountancy students by C\'s Academy for Professional Studies',
   authors: [{ name: 'CAPS Learn Team' }],
   keywords: 'CA, Chartered Accountancy, CA Foundation, CA Intermediate, CA Final, mock tests, study materials, learning analytics, CAPS Learn',
   openGraph: {
     title: 'CAPS Learn - Chartered Accountancy Learning Platform',
-    description: 'A comprehensive learning platform for chartered accountancy students by C.A.C.S. Academy of Professional Students in India',
+    description: 'A comprehensive learning platform for chartered accountancy students by C\'s Academy for Professional Studies',
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary',
     title: 'CAPS Learn - Chartered Accountancy Learning Platform',
-    description: 'A comprehensive learning platform for chartered accountancy students by C.A.C.S. Academy of Professional Students in India',
+    description: 'A comprehensive learning platform for chartered accountancy students by C\'s Academy for Professional Studies',
   },
   icons: {
     icon: '/logo.svg',
