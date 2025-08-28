@@ -1,5 +1,4 @@
 {
-  "name": "caps-learn",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
