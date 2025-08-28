@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://caps-learn.vercel.app'),
   title: 'CAPS Learn - Chartered Accountancy Learning Platform',
   description: 'A comprehensive learning platform for chartered accountancy students by C\'s Academy for Professional Studies',
   authors: [{ name: 'CAPS Learn Team' }],
