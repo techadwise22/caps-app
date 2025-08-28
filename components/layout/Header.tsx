@@ -3,10 +3,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, UserCircleIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard' },
@@ -24,13 +25,20 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-3">
               <div className="relative w-10 h-10">
-                <Image
-                  src="/logo.svg"
-                  alt="CAPS Learn Logo"
-                  width={40}
-                  height={40}
-                  className="logo-spin"
-                />
+                {!logoError ? (
+                  <Image
+                    src="/logo.svg"
+                    alt="CAPS Learn Logo"
+                    width={40}
+                    height={40}
+                    className="logo-spin"
+                    onError={() => setLogoError(true)}
+                  />
+                ) : (
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                    <AcademicCapIcon className="h-6 w-6 text-white" />
+                  </div>
+                )}
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-blue-900">CAPS Learn</span>

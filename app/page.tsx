@@ -13,6 +13,7 @@ export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [logoError, setLogoError] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -63,13 +64,20 @@ export default function HomePage() {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <div className="relative w-10 h-10 mr-3">
-                <Image
-                  src="/logo.svg"
-                  alt="CAPS Learn Logo"
-                  width={40}
-                  height={40}
-                  className="logo-spin"
-                />
+                {!logoError ? (
+                  <Image
+                    src="/logo.svg"
+                    alt="CAPS Learn Logo"
+                    width={40}
+                    height={40}
+                    className="logo-spin"
+                    onError={() => setLogoError(true)}
+                  />
+                ) : (
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                    <AcademicCapIcon className="h-6 w-6 text-white" />
+                  </div>
+                )}
               </div>
               <div className="flex flex-col">
                 <h1 className="text-2xl font-bold text-blue-900">CAPS Learn</h1>
@@ -265,13 +273,20 @@ export default function HomePage() {
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <div className="relative w-8 h-8 mr-3">
-                <Image
-                  src="/logo.svg"
-                  alt="CAPS Learn Logo"
-                  width={32}
-                  height={32}
-                  className="logo-spin"
-                />
+                {!logoError ? (
+                  <Image
+                    src="/logo.svg"
+                    alt="CAPS Learn Logo"
+                    width={32}
+                    height={32}
+                    className="logo-spin"
+                    onError={() => setLogoError(true)}
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <AcademicCapIcon className="h-5 w-5 text-white" />
+                  </div>
+                )}
               </div>
               <h3 className="text-2xl font-bold">CAPS Learn</h3>
             </div>

@@ -64,6 +64,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   if (!user) {
     router.push('/');
@@ -86,13 +87,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex h-16 items-center justify-between px-6">
             <div className="flex items-center">
               <div className="relative w-8 h-8 mr-3">
-                <Image
-                  src="/logo.svg"
-                  alt="CAPS Learn Logo"
-                  width={32}
-                  height={32}
-                  className="logo-spin"
-                />
+                {!logoError ? (
+                  <Image
+                    src="/logo.svg"
+                    alt="CAPS Learn Logo"
+                    width={32}
+                    height={32}
+                    className="logo-spin"
+                    onError={() => setLogoError(true)}
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <AcademicCapIcon className="h-5 w-5 text-white" />
+                  </div>
+                )}
               </div>
               <div className="flex flex-col">
                 <h1 className="text-xl font-bold text-blue-900">CAPS Learn</h1>
@@ -133,13 +141,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex h-16 items-center px-6">
             <div className="flex items-center">
               <div className="relative w-8 h-8 mr-3">
-                <Image
-                  src="/logo.svg"
-                  alt="CAPS Learn Logo"
-                  width={32}
-                  height={32}
-                  className="logo-spin"
-                />
+                {!logoError ? (
+                  <Image
+                    src="/logo.svg"
+                    alt="CAPS Learn Logo"
+                    width={32}
+                    height={32}
+                    className="logo-spin"
+                    onError={() => setLogoError(true)}
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <AcademicCapIcon className="h-5 w-5 text-white" />
+                  </div>
+                )}
               </div>
               <div className="flex flex-col">
                 <h1 className="text-xl font-bold text-blue-900">CAPS Learn</h1>
