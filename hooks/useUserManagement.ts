@@ -100,8 +100,6 @@ export function useUserManagement() {
     } catch (error) {
       console.error('Error loading users:', error);
       toast.error('Failed to load users');
-      // Fallback to mock data for demonstration
-      setUsers(mockUsers);
     } finally {
       setLoading(false);
     }
