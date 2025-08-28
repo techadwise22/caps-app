@@ -5,6 +5,8 @@ export interface User {
   full_name: string;
   role: UserRole;
   avatar_url?: string;
+  course_id?: string;
+  cohort_id?: string;
   created_at: string;
   updated_at: string;
   last_login?: string;
@@ -30,6 +32,7 @@ export interface Cohort {
   name: string;
   description: string;
   course_id: string;
+  created_by: string;
   created_at: string;
   updated_at: string;
   is_active: boolean;
@@ -162,7 +165,7 @@ export interface FileContent extends ContentItem {
   file_type: FileType;
 }
 
-export type FileType = 'pdf' | 'ppt' | 'doc' | 'image' | 'audio' | 'video' | 'other';
+export type FileType = 'pdf' | 'ppt' | 'pptx' | 'doc' | 'docx' | 'image' | 'audio' | 'video' | 'other';
 
 export interface ContentPage extends ContentItem {
   type: 'page';
@@ -213,6 +216,10 @@ export interface ClassSession {
   start_time: string;
   end_time: string;
   meeting_link?: string;
+  meeting_id?: string;
+  max_participants?: number;
+  is_recurring?: boolean;
+  recurrence_pattern?: string | null;
   zoom_meeting_id?: string;
   zoom_join_url?: string;
   recording_url?: string;
@@ -227,13 +234,15 @@ export type SessionStatus = 'scheduled' | 'in_progress' | 'completed' | 'cancell
 export interface TestAssignment {
   id: string;
   test_id: string;
-  cohort_id?: string;
-  user_id?: string;
+  assigned_to_type: 'cohort' | 'user';
+  assigned_to_id: string;
   start_time: string;
   end_time: string;
   max_attempts: number;
+  is_active: boolean;
   created_by: string;
   created_at: string;
+  updated_at: string;
 }
 
 // Analytics Types

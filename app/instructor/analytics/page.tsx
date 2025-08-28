@@ -369,7 +369,7 @@ export default function AnalyticsPage() {
                   </li>
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-success-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                    Questions 1, 3, and 5 show excellent performance (>85% accuracy)
+                    Questions 1, 3, and 5 show excellent performance (&gt;85% accuracy)
                   </li>
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-success-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>

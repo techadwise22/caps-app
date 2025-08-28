@@ -12,7 +12,7 @@ import {
   TrashIcon,
   DocumentTextIcon,
   TagIcon,
-  FilterIcon,
+  FunnelIcon,
   MagnifyingGlassIcon,
   DocumentArrowDownIcon,
   DocumentArrowUpIcon,

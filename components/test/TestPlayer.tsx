@@ -69,7 +69,7 @@ export default function TestPlayer({ test, onComplete, onExit }: TestPlayerProps
     },
   ];
 
-  const mockOptions = {
+  const mockOptions: Record<string, { id: string; text: string; is_correct: boolean }[]> = {
     q1: [
       { id: 'opt1', text: 'O(1)', is_correct: false },
       { id: 'opt2', text: 'O(log n)', is_correct: true },
@@ -324,7 +324,7 @@ export default function TestPlayer({ test, onComplete, onExit }: TestPlayerProps
                             const currentAnswers = answers[currentQuestion.id] || [];
                             const newAnswers = e.target.checked
                               ? [...currentAnswers, option.id]
-                              : currentAnswers.filter(id => id !== option.id);
+                              : currentAnswers.filter((id: string) => id !== option.id);
                             handleAnswerChange(currentQuestion.id, newAnswers);
                           }}
                           className="sr-only"
