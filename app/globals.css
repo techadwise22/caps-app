@@ -2,6 +2,137 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CAPS Learn Custom Design System */
+:root {
+  --caps-primary: #1e3a8a; /* Dark blue from logo */
+  --caps-secondary: #FFD700; /* Gold from logo border */
+  --caps-accent: #3b82f6; /* Light blue accent */
+  --caps-success: #10b981; /* Green for success states */
+  --caps-warning: #f59e0b; /* Amber for warnings */
+  --caps-error: #ef4444; /* Red for errors */
+  --caps-gray-50: #f9fafb;
+  --caps-gray-100: #f3f4f6;
+  --caps-gray-200: #e5e7eb;
+  --caps-gray-300: #d1d5db;
+  --caps-gray-400: #9ca3af;
+  --caps-gray-500: #6b7280;
+  --caps-gray-600: #4b5563;
+  --caps-gray-700: #374151;
+  --caps-gray-800: #1f2937;
+  --caps-gray-900: #111827;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--caps-gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--caps-gray-300);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--caps-gray-400);
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+.btn-success {
+  @apply bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+.btn-warning {
+  @apply bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+.btn-danger {
+  @apply bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+}
+
+.card-hover {
+  @apply hover:shadow-md transition-shadow duration-200;
+}
+
+/* Badge styles */
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-primary {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge-warning {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.badge-danger {
+  @apply bg-red-100 text-red-800;
+}
+
+/* Input styles */
+.input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200;
+}
+
+/* Modal styles */
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto;
+}
+
+/* Loading spinner */
+.spinner {
+  @apply animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600;
+}
+
+/* Gradient backgrounds */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--caps-primary) 0%, var(--caps-accent) 100%);
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, var(--caps-secondary) 0%, #fbbf24 100%);
+}
+
+/* Logo animation */
+.logo-spin {
+  animation: logo-spin 20s linear infinite;
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {

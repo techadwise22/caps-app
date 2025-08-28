@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   HomeIcon,
   AcademicCapIcon,
@@ -84,8 +85,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-xl">
           <div className="flex h-16 items-center justify-between px-6">
             <div className="flex items-center">
-              <AcademicCapIcon className="h-8 w-8 text-primary-600 mr-3" />
-              <h1 className="text-xl font-bold text-surface-900">CAPS CA</h1>
+              <div className="relative w-8 h-8 mr-3">
+                <Image
+                  src="/logo.svg"
+                  alt="CAPS Learn Logo"
+                  width={32}
+                  height={32}
+                  className="logo-spin"
+                />
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-xl font-bold text-blue-900">CAPS Learn</h1>
+                <span className="text-xs text-gray-500">CA Coaching Centre</span>
+              </div>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -120,8 +132,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex flex-col flex-grow bg-white shadow-xl">
           <div className="flex h-16 items-center px-6">
             <div className="flex items-center">
-              <AcademicCapIcon className="h-8 w-8 text-primary-600 mr-3" />
-              <h1 className="text-xl font-bold text-surface-900">CAPS CA</h1>
+              <div className="relative w-8 h-8 mr-3">
+                <Image
+                  src="/logo.svg"
+                  alt="CAPS Learn Logo"
+                  width={32}
+                  height={32}
+                  className="logo-spin"
+                />
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-xl font-bold text-blue-900">CAPS Learn</h1>
+                <span className="text-xs text-gray-500">CA Coaching Centre</span>
+              </div>
             </div>
           </div>
           <nav className="flex-1 px-4 py-6">

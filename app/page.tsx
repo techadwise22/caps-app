@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { useState } from 'react';
+import Image from 'next/image';
 import { AcademicCapIcon, ChartBarIcon, BookOpenIcon, UsersIcon, ClockIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
 export default function HomePage() {
@@ -61,8 +62,19 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <AcademicCapIcon className="h-8 w-8 text-primary-600 mr-3" />
-              <h1 className="text-2xl font-bold text-surface-900">CAPS CA</h1>
+              <div className="relative w-10 h-10 mr-3">
+                <Image
+                  src="/logo.svg"
+                  alt="CAPS Learn Logo"
+                  width={40}
+                  height={40}
+                  className="logo-spin"
+                />
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-2xl font-bold text-blue-900">CAPS Learn</h1>
+                <span className="text-xs text-gray-500">CA Coaching Centre</span>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <a href="#features" className="text-surface-600 hover:text-primary-600 transition-colors">
@@ -79,12 +91,12 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-surface-900 mb-6">
+          <h1 className="text-5xl md:text-6xl font-bold text-blue-900 mb-6">
             Master Your
-            <span className="text-primary-600"> CA Journey</span>
+            <span className="text-yellow-600"> CA Journey</span>
           </h1>
-          <p className="text-xl text-surface-600 mb-8 max-w-3xl mx-auto">
-            Comprehensive learning platform designed specifically for Chartered Accountancy students. 
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Comprehensive learning platform by <span className="font-semibold text-blue-800">C.A.C.S. Academy of Professional Students in India</span>. 
             Access mock tests, study materials, and track your progress across CA Foundation, Intermediate, and Final levels.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -252,11 +264,19 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
-              <AcademicCapIcon className="h-8 w-8 text-primary-400 mr-3" />
-              <h3 className="text-2xl font-bold">CAPS CA</h3>
+              <div className="relative w-8 h-8 mr-3">
+                <Image
+                  src="/logo.svg"
+                  alt="CAPS Learn Logo"
+                  width={32}
+                  height={32}
+                  className="logo-spin"
+                />
+              </div>
+              <h3 className="text-2xl font-bold">CAPS Learn</h3>
             </div>
-            <p className="text-surface-400 mb-4">
-              Empowering CA students to achieve excellence in their professional journey
+            <p className="text-gray-400 mb-4">
+              Empowering CA students to achieve excellence in their professional journey by C.A.C.S. Academy of Professional Students in India
             </p>
             <div className="flex justify-center space-x-6 text-surface-400">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
