@@ -8,10 +8,6 @@ const nextConfig = {
     // This will help with SSR issues
     serverComponentsExternalPackages: ['@supabase/supabase-js'],
   },
-  // Add runtime configuration
-  env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-  },
 }
 
 module.exports = nextConfig 
