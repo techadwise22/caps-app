@@ -33,6 +33,14 @@ export function formatDuration(minutes: number): string {
   return `${mins}m`;
 }
 
+export function formatTime(time: string): string {
+  // Format time string (e.g., "14:30" to "2:30 PM")
+  const [hours, minutes] = time.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
 // Test utilities
 export function calculateScore(
   correctAnswers: number,

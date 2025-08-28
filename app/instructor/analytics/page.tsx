@@ -8,8 +8,8 @@ import {
   UserGroupIcon,
   ClockIcon,
   AcademicCapIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
 } from '@heroicons/react/24/outline';
 import {
   BarChart,
@@ -148,7 +148,7 @@ export default function AnalyticsPage() {
                 <p className="text-sm font-medium text-surface-600">Total Attempts</p>
                 <p className="text-2xl font-bold text-surface-900">{analytics?.total_attempts}</p>
                 <div className="flex items-center mt-1">
-                  <TrendingUpIcon className="h-4 w-4 text-success-600 mr-1" />
+                  <ArrowTrendingUpIcon className="h-4 w-4 text-success-600 mr-1" />
                   <span className="text-sm text-success-600">+12%</span>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default function AnalyticsPage() {
                 <p className="text-sm font-medium text-surface-600">Average Score</p>
                 <p className="text-2xl font-bold text-surface-900">{analytics?.average_score}%</p>
                 <div className="flex items-center mt-1">
-                  <TrendingUpIcon className="h-4 w-4 text-success-600 mr-1" />
+                  <ArrowTrendingUpIcon className="h-4 w-4 text-success-600 mr-1" />
                   <span className="text-sm text-success-600">+5.2%</span>
                 </div>
               </div>
@@ -180,7 +180,7 @@ export default function AnalyticsPage() {
                 <p className="text-sm font-medium text-surface-600">Completion Rate</p>
                 <p className="text-2xl font-bold text-surface-900">{analytics?.completion_rate}%</p>
                 <div className="flex items-center mt-1">
-                  <TrendingUpIcon className="h-4 w-4 text-success-600 mr-1" />
+                  <ArrowTrendingUpIcon className="h-4 w-4 text-success-600 mr-1" />
                   <span className="text-sm text-success-600">+2.1%</span>
                 </div>
               </div>
@@ -196,7 +196,7 @@ export default function AnalyticsPage() {
                 <p className="text-sm font-medium text-surface-600">Avg Time (min)</p>
                 <p className="text-2xl font-bold text-surface-900">{analytics?.average_time_taken}</p>
                 <div className="flex items-center mt-1">
-                  <TrendingDownIcon className="h-4 w-4 text-danger-600 mr-1" />
+                  <ArrowTrendingDownIcon className="h-4 w-4 text-danger-600 mr-1" />
                   <span className="text-sm text-danger-600">-3.5%</span>
                 </div>
               </div>

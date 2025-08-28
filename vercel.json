@@ -1,4 +1,5 @@
 {
+  "name": "caps-app",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
