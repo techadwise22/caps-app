@@ -11,23 +11,26 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://caps-learn.vercel.app'),
-  title: 'CAPS Learn - Chartered Accountancy Learning Platform',
+  title: 'CAPS @ 25 - Chartered Accountancy Learning Platform',
   description: 'A comprehensive learning platform for chartered accountancy students by C\'s Academy for Professional Studies',
-  authors: [{ name: 'CAPS Learn Team' }],
-  keywords: 'CA, Chartered Accountancy, CA Foundation, CA Intermediate, CA Final, mock tests, study materials, learning analytics, CAPS Learn',
+  authors: [{ name: 'CAPS @ 25 Team' }],
+  keywords: 'CA, Chartered Accountancy, CA Foundation, CA Intermediate, CA Final, mock tests, study materials, learning analytics, CAPS @ 25',
   openGraph: {
-    title: 'CAPS Learn - Chartered Accountancy Learning Platform',
+    title: 'CAPS @ 25 - Chartered Accountancy Learning Platform',
     description: 'A comprehensive learning platform for chartered accountancy students by C\'s Academy for Professional Studies',
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary',
-    title: 'CAPS Learn - Chartered Accountancy Learning Platform',
+    title: 'CAPS @ 25 - Chartered Accountancy Learning Platform',
     description: 'A comprehensive learning platform for chartered accountancy students by C\'s Academy for Professional Studies',
   },
   icons: {
-    icon: '/logo.svg',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/logo.svg', type: 'image/svg+xml' }
+    ],
     apple: '/logo.svg',
   },
 };

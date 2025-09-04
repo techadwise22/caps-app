@@ -1,363 +1,259 @@
 'use client';
 
 import { useAuth } from '@/components/providers/AuthProvider';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import React from 'react';
 import { 
-  ChartBarIcon, 
-  AcademicCapIcon,
+  BookOpenIcon, 
+  PlayIcon, 
+  QuestionMarkCircleIcon,
+  CalendarIcon,
   ClockIcon,
-  CheckCircleIcon,
-  ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
-  BookOpenIcon
+  UserIcon
 } from '@heroicons/react/24/outline';
 
+interface Activity {
+  id: string;
+  title: string;
+  instructor: string;
+  type: 'video' | 'notes' | 'mcq' | 'test';
+  subject: string;
+  level: string;
+  date: string;
+  duration: string;
+  status: 'completed' | 'in_progress' | 'not_started';
+}
+
 export default function StudentProgressPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/');
-    }
-  }, [user, loading, router]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner w-8 h-8"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
-
-  // Mock progress data
-  const overallStats = {
-    totalTests: 12,
-    completedTests: 10,
-    averageScore: 78.5,
-    studyHours: 45.5,
-    improvement: '+12%',
-    trend: 'up'
-  };
-
-  const subjectPerformance = [
-    {
-      subject: 'Accounting',
-      level: 'Foundation',
-      testsTaken: 4,
-      averageScore: 82,
-      improvement: '+8%',
-      trend: 'up',
-      lastTest: '2024-01-15',
-      topics: ['Journal Entries', 'Ledger Accounts', 'Trial Balance', 'Financial Statements']
-    },
-    {
-      subject: 'Business Laws',
-      level: 'Foundation',
-      testsTaken: 3,
-      averageScore: 75,
-      improvement: '+15%',
-      trend: 'up',
-      lastTest: '2024-01-12',
-      topics: ['Company Law', 'Partnership Law', 'Contract Law']
-    },
-    {
-      subject: 'Economics',
-      level: 'Foundation',
-      testsTaken: 2,
-      averageScore: 70,
-      improvement: '+5%',
-      trend: 'up',
-      lastTest: '2024-01-10',
-      topics: ['Microeconomics', 'Macroeconomics']
-    },
-    {
-      subject: 'Mathematics',
-      level: 'Foundation',
-      testsTaken: 1,
-      averageScore: 65,
-      improvement: '-2%',
-      trend: 'down',
-      lastTest: '2024-01-08',
-      topics: ['Algebra', 'Statistics']
-    },
-  ];
-
-  const recentActivity = [
+  // Mock activity data
+  const activities: Activity[] = [
     {
       id: '1',
-      type: 'test_completed',
-      title: 'CA Foundation - Accounting Mock Test 1',
+      title: 'Economics Concepts Live Class',
+      instructor: 'Dr. Divyashree',
+      type: 'video',
+      subject: 'Economics',
+      level: 'Foundation',
       date: '2024-01-15',
-      score: 85,
-      time: '2 hours 30 minutes',
-      improvement: '+5%'
+      duration: '1 hour 45 minutes',
+      status: 'completed'
     },
     {
       id: '2',
-      type: 'study_session',
-      title: 'Business Laws - Company Law',
+      title: 'Business Laws Practice Session',
+      instructor: 'Dr. Rajdeep Manwani',
+      type: 'mcq',
+      subject: 'Business Laws',
+      level: 'Foundation',
       date: '2024-01-14',
-      duration: '1 hour 45 minutes',
-      progress: 'Completed Chapter 3'
+      duration: '45 minutes',
+      status: 'completed'
     },
     {
       id: '3',
-      type: 'test_completed',
-      title: 'CA Foundation - Business Laws Quiz',
-      date: '2024-01-12',
-      score: 78,
-      time: '1 hour 15 minutes',
-      improvement: '+12%'
+      title: 'Accounting Fundamentals Review',
+      instructor: 'CA Chandrashekhar Shetty Mundkur',
+      type: 'notes',
+      subject: 'Accounting',
+      level: 'Foundation',
+      date: '2024-01-13',
+      duration: '2 hours',
+      status: 'in_progress'
     },
     {
       id: '4',
-      type: 'class_attended',
-      title: 'Economics Concepts Live Class',
-      date: '2024-01-11',
-      duration: '2 hours',
-      instructor: 'Dr. Divyashree'
+      title: 'Mathematics Problem Solving',
+      instructor: 'CA Sudhindra MS',
+      type: 'mcq',
+      subject: 'Mathematics',
+      level: 'Foundation',
+      date: '2024-01-12',
+      duration: '1 hour 30 minutes',
+      status: 'completed'
     },
+    {
+      id: '5',
+      title: 'Business Laws Case Studies',
+      instructor: 'Dr. Rajdeep Manwani',
+      type: 'notes',
+      subject: 'Business Laws',
+      level: 'Foundation',
+      date: '2024-01-11',
+      duration: '1 hour 15 minutes',
+      status: 'not_started'
+    }
   ];
 
-  const getTrendIcon = (trend: string) => {
-    return trend === 'up' ? ArrowTrendingUpIcon : ArrowTrendingDownIcon;
-  };
-
-  const getTrendColor = (trend: string) => {
-    return trend === 'up' ? 'text-success-600' : 'text-danger-600';
-  };
-
-  const getActivityIcon = (type: string) => {
+  const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'test_completed':
-        return CheckCircleIcon;
-      case 'study_session':
-        return BookOpenIcon;
-      case 'class_attended':
-        return AcademicCapIcon;
+      case 'video':
+        return <PlayIcon className="h-5 w-5 text-red-600" />;
+      case 'notes':
+        return <BookOpenIcon className="h-5 w-5 text-blue-600" />;
+      case 'mcq':
+        return <QuestionMarkCircleIcon className="h-5 w-5 text-green-600" />;
+      case 'test':
+        return <QuestionMarkCircleIcon className="h-5 w-5 text-purple-600" />;
       default:
-        return ChartBarIcon;
+        return <BookOpenIcon className="h-5 w-5 text-gray-600" />;
     }
   };
 
-  const getActivityColor = (type: string) => {
+  const getTypeColor = (type: string) => {
     switch (type) {
-      case 'test_completed':
-        return 'bg-success-100 text-success-600';
-      case 'study_session':
-        return 'bg-primary-100 text-primary-600';
-      case 'class_attended':
-        return 'bg-secondary-100 text-secondary-600';
+      case 'video':
+        return 'bg-red-100 text-red-800';
+      case 'notes':
+        return 'bg-blue-100 text-blue-800';
+      case 'mcq':
+        return 'bg-green-100 text-green-800';
+      case 'test':
+        return 'bg-purple-100 text-purple-800';
       default:
-        return 'bg-surface-100 text-surface-600';
+        return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'in_progress':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'not_started':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'Completed';
+      case 'in_progress':
+        return 'In Progress';
+      case 'not_started':
+        return 'Not Started';
+      default:
+        return 'Unknown';
+    }
+  };
+
+  const completedActivities = activities.filter(a => a.status === 'completed').length;
+  const inProgressActivities = activities.filter(a => a.status === 'in_progress').length;
+  const notStartedActivities = activities.filter(a => a.status === 'not_started').length;
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-surface-900">My Progress</h1>
-          <p className="text-surface-600">Track your CA learning journey and performance</p>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-surface-900 mb-2">Learning Activity</h1>
+          <p className="text-surface-600">
+            Track your learning activities and study sessions
+          </p>
         </div>
 
-        {/* Overall Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl p-6 shadow-soft">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-surface-600 text-sm font-medium">Total Tests</p>
-                <p className="text-2xl font-bold text-surface-900">{overallStats.totalTests}</p>
-                <p className="text-sm text-surface-500">{overallStats.completedTests} completed</p>
+        {/* Activity Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-soft p-6">
+            <div className="flex items-center">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <BookOpenIcon className="h-6 w-6 text-green-600" />
               </div>
-              <div className="p-3 bg-primary-100 rounded-lg">
-                <ChartBarIcon className="h-6 w-6 text-primary-600" />
+              <div className="ml-4">
+                <p className="text-surface-600 text-sm font-medium">Completed</p>
+                <p className="text-2xl font-bold text-surface-900">{completedActivities}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-soft">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-surface-600 text-sm font-medium">Average Score</p>
-                <p className="text-2xl font-bold text-surface-900">{overallStats.averageScore}%</p>
-                <div className="flex items-center mt-1">
-                  {React.createElement(getTrendIcon(overallStats.trend), { 
-                    className: `h-4 w-4 ${getTrendColor(overallStats.trend)} mr-1` 
-                  })}
-                  <span className={`text-sm font-medium ${getTrendColor(overallStats.trend)}`}>
-                    {overallStats.improvement}
-                  </span>
+          <div className="bg-white rounded-xl shadow-soft p-6">
+            <div className="flex items-center">
+              <div className="p-3 bg-yellow-100 rounded-lg">
+                <ClockIcon className="h-6 w-6 text-yellow-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-surface-600 text-sm font-medium">In Progress</p>
+                <p className="text-2xl font-bold text-surface-900">{inProgressActivities}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-soft p-6">
+            <div className="flex items-center">
+              <div className="p-3 bg-gray-100 rounded-lg">
+                <BookOpenIcon className="h-6 w-6 text-gray-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-surface-600 text-sm font-medium">Not Started</p>
+                <p className="text-2xl font-bold text-surface-900">{notStartedActivities}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activities */}
+        <div className="bg-white rounded-xl shadow-soft p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-surface-900">Recent Activities</h2>
+              <p className="text-surface-600 text-sm">Your learning journey timeline</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {activities.map((activity) => (
+              <div key={activity.id} className="border border-surface-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    {getTypeIcon(activity.type)}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-surface-900 mb-1">
+                          {activity.title}
+                        </h3>
+                        
+                        <div className="flex items-center space-x-4 text-xs text-surface-500 mb-2">
+                          <span className="flex items-center">
+                            <UserIcon className="h-3 w-3 mr-1" />
+                            {activity.instructor}
+                          </span>
+                          <span className="flex items-center">
+                            <CalendarIcon className="h-3 w-3 mr-1" />
+                            {activity.date}
+                          </span>
+                          <span className="flex items-center">
+                            <ClockIcon className="h-3 w-3 mr-1" />
+                            {activity.duration}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(activity.type)}`}>
+                            {activity.type.toUpperCase()}
+                          </span>
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {activity.subject}
+                          </span>
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            {activity.level}
+                          </span>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(activity.status)}`}>
+                            {getStatusText(activity.status)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="p-3 bg-success-100 rounded-lg">
-                <CheckCircleIcon className="h-6 w-6 text-success-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-soft">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-surface-600 text-sm font-medium">Study Hours</p>
-                <p className="text-2xl font-bold text-surface-900">{overallStats.studyHours}</p>
-                <p className="text-sm text-surface-500">This month</p>
-              </div>
-              <div className="p-3 bg-warning-100 rounded-lg">
-                <ClockIcon className="h-6 w-6 text-warning-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-soft">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-surface-600 text-sm font-medium">Completion Rate</p>
-                <p className="text-2xl font-bold text-surface-900">
-                  {Math.round((overallStats.completedTests / overallStats.totalTests) * 100)}%
-                </p>
-                <p className="text-sm text-surface-500">Tests completed</p>
-              </div>
-              <div className="p-3 bg-secondary-100 rounded-lg">
-                <AcademicCapIcon className="h-6 w-6 text-secondary-600" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Subject Performance */}
-        <div className="bg-white rounded-xl shadow-soft">
-          <div className="p-6 border-b border-surface-200">
-            <h2 className="text-xl font-semibold text-surface-900">Subject Performance</h2>
-            <p className="text-surface-600 text-sm">Your performance across different CA subjects</p>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {subjectPerformance.map((subject, index) => {
-                const TrendIcon = getTrendIcon(subject.trend);
-                return (
-                  <div key={index} className="border border-surface-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="text-lg font-semibold text-surface-900">{subject.subject}</h3>
-                        <p className="text-sm text-surface-600">{subject.level}</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <TrendIcon className={`h-4 w-4 ${getTrendColor(subject.trend)}`} />
-                        <span className={`text-sm font-medium ${getTrendColor(subject.trend)}`}>
-                          {subject.improvement}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-surface-600">Tests Taken:</span>
-                        <span className="font-medium text-surface-900">{subject.testsTaken}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-surface-600">Average Score:</span>
-                        <span className="font-medium text-surface-900">{subject.averageScore}%</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-surface-600">Last Test:</span>
-                        <span className="font-medium text-surface-900">{subject.lastTest}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <p className="text-sm font-medium text-surface-900 mb-2">Topics Covered:</p>
-                      <div className="flex flex-wrap gap-1">
-                        {subject.topics.map((topic, topicIndex) => (
-                          <span key={topicIndex} className="px-2 py-1 bg-surface-100 text-surface-700 rounded-full text-xs">
-                            {topic}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-soft">
-          <div className="p-6 border-b border-surface-200">
-            <h2 className="text-xl font-semibold text-surface-900">Recent Activity</h2>
-            <p className="text-surface-600 text-sm">Your latest learning activities and achievements</p>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              {recentActivity.map((activity) => {
-                const ActivityIcon = getActivityIcon(activity.type);
-                return (
-                  <div key={activity.id} className="flex items-start space-x-4 p-4 border border-surface-200 rounded-lg hover:bg-surface-50 transition-colors">
-                    <div className={`p-2 rounded-lg ${getActivityColor(activity.type)}`}>
-                      <ActivityIcon className="h-5 w-5" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-surface-900">{activity.title}</h3>
-                      <div className="flex items-center space-x-4 text-sm text-surface-600 mt-1">
-                        <span>{activity.date}</span>
-                        {activity.type === 'test_completed' && (
-                          <>
-                            <span>Score: {activity.score}%</span>
-                            <span>Time: {activity.time}</span>
-                            <span className="text-success-600">{activity.improvement}</span>
-                          </>
-                        )}
-                        {activity.type === 'study_session' && (
-                          <>
-                            <span>Duration: {activity.duration}</span>
-                            <span>{activity.progress}</span>
-                          </>
-                        )}
-                        {activity.type === 'class_attended' && (
-                          <>
-                            <span>Duration: {activity.duration}</span>
-                            <span>Instructor: {activity.instructor}</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Progress Insights */}
-        <div className="bg-white rounded-xl shadow-soft p-6">
-          <h2 className="text-xl font-semibold text-surface-900 mb-4">Progress Insights</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg">
-              <h3 className="font-semibold text-surface-900 mb-2">Strong Areas</h3>
-              <ul className="space-y-1 text-sm text-surface-700">
-                <li>• Accounting fundamentals (82% avg)</li>
-                <li>• Business Laws concepts (75% avg)</li>
-                <li>• Consistent study routine</li>
-              </ul>
-            </div>
-            <div className="p-4 bg-gradient-to-br from-warning-50 to-warning-100 rounded-lg">
-              <h3 className="font-semibold text-surface-900 mb-2">Areas for Improvement</h3>
-              <ul className="space-y-1 text-sm text-surface-700">
-                <li>• Mathematics problem-solving (65% avg)</li>
-                <li>• Economics application questions</li>
-                <li>• Time management in tests</li>
-              </ul>
-            </div>
+            ))}
           </div>
         </div>
       </div>

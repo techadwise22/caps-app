@@ -22,6 +22,63 @@
   --caps-gray-900: #111827;
 }
 
+/* Logo animations and styles */
+.logo-container {
+  @apply relative transition-all duration-300 ease-in-out;
+}
+
+.logo-container:hover {
+  @apply transform scale-110 rotate-1;
+}
+
+.logo-spin {
+  animation: logoSpin 20s linear infinite;
+}
+
+@keyframes logoSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logo-pulse {
+  animation: logoPulse 2s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.logo-bounce {
+  animation: logoBounce 1s ease-in-out infinite;
+}
+
+@keyframes logoBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Logo glow effect */
+.logo-glow {
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+}
+
+.logo-glow:hover {
+  filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.8));
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -117,20 +174,6 @@
 
 .gradient-secondary {
   background: linear-gradient(135deg, var(--caps-secondary) 0%, #fbbf24 100%);
-}
-
-/* Logo animation */
-.logo-spin {
-  animation: logo-spin 20s linear infinite;
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');

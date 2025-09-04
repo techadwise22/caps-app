@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import toast from 'react-hot-toast';
+import Logo from '@/components/ui/Logo';
 import {
   HomeIcon,
   AcademicCapIcon,
@@ -206,14 +206,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex items-center">
               <div className="relative w-8 h-8 mr-3">
                 {!logoError ? (
-                  <Image
-                    src="/logo.svg"
-                    alt="CAPS Learn Logo"
-                    width={32}
-                    height={32}
-                    className="logo-spin"
-                    onError={() => setLogoError(true)}
-                  />
+                  <Logo />
                 ) : (
                   <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                     <AcademicCapIcon className="h-5 w-5 text-white" />
@@ -260,14 +253,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex items-center">
               <div className="relative w-8 h-8 mr-3">
                 {!logoError ? (
-                  <Image
-                    src="/logo.svg"
-                    alt="CAPS Learn Logo"
-                    width={32}
-                    height={32}
-                    className="logo-spin"
-                    onError={() => setLogoError(true)}
-                  />
+                  <Logo />
                 ) : (
                   <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                     <AcademicCapIcon className="h-5 w-5 text-white" />

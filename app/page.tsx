@@ -105,7 +105,7 @@ export default function HomePage() {
           </h1>
                       <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
               Comprehensive learning platform by <span className="font-semibold text-blue-800">C's Academy for Professional Studies</span>. 
-              Access mock tests, study materials, and track your progress across CA Foundation, Intermediate, and Final levels.
+              Access mock tests, study materials, and practice questions across CA Foundation, Intermediate, and Final levels.
             </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
@@ -153,7 +153,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold text-surface-900 mb-2">Performance Analytics</h3>
               <p className="text-surface-600">
-                Track your progress with detailed analytics and identify areas for improvement
+                Practice with comprehensive MCQs and identify areas for improvement
               </p>
             </div>
 
@@ -181,10 +181,10 @@ export default function HomePage() {
               <div className="bg-danger-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircleIcon className="h-8 w-8 text-danger-600" />
               </div>
-              <h3 className="text-xl font-semibold text-surface-900 mb-2">Progress Tracking</h3>
-              <p className="text-surface-600">
-                Monitor your learning journey with detailed progress reports and insights
-              </p>
+                              <h3 className="text-xl font-semibold text-surface-900 mb-2">Learning Resources</h3>
+                <p className="text-surface-600">
+                  Access comprehensive study materials and practice resources
+                </p>
             </div>
 
             <div className="text-center p-6">

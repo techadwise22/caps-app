@@ -101,7 +101,7 @@ export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps)
             <h4 className="text-lg font-medium text-surface-900 mb-4">Activity Summary</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-surface-50 rounded-lg p-4">
-                <p className="text-sm text-surface-600">Tests Taken</p>
+                <p className="text-sm text-surface-600">Test Activity</p>
                 <p className="text-2xl font-bold text-surface-900">0</p>
               </div>
               <div className="bg-surface-50 rounded-lg p-4">

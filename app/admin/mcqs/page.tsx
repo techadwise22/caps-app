@@ -1,18 +1,16 @@
 'use client';
 
-import { useAuth } from '@/components/providers/AuthProvider';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState, useRef } from 'react';
+import * as XLSX from 'xlsx';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { 
-  QuestionMarkCircleIcon, 
   PlusIcon, 
+  TrashIcon, 
   DocumentArrowUpIcon,
-  EyeIcon,
-  PencilIcon,
-  TrashIcon,
-  CheckCircleIcon,
-  XCircleIcon
+  DocumentArrowDownIcon,
+  CheckIcon,
+  XMarkIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
@@ -26,7 +24,7 @@ interface MCQ {
   correctAnswer: string;
   subject: string;
   level: string;
-  explanation?: string;
+  explanation: string;
   created_at: string;
   updated_at: string;
 }
@@ -44,33 +42,20 @@ interface CSVRow {
   'Explanation': string;
 }
 
-export default function MCQManagement() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+export default function AdminMCQsPage() {
   const [mcqs, setMcqs] = useState<MCQ[]>([]);
-  const [loadingData, setLoadingData] = useState(true);
+  const [selectedMcqs, setSelectedMcqs] = useState<Set<string>>(new Set());
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [previewData, setPreviewData] = useState<CSVRow[]>([]);
-  const [showPreview, setShowPreview] = useState(false);
+  const [uploadedData, setUploadedData] = useState<CSVRow[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterSubject, setFilterSubject] = useState('');
+  const [filterLevel, setFilterLevel] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/');
-    }
-  }, [user, loading, router]);
-
-  useEffect(() => {
-    if (user) {
-      loadMCQs();
-    }
-  }, [user]);
-
-  const loadMCQs = () => {
-    setLoadingData(true);
-    
-    // Mock data - in real app, this would fetch from API
+  // Mock data for demonstration
+  useState(() => {
     const mockMCQs: MCQ[] = [
       {
         id: '1',
@@ -89,476 +74,635 @@ export default function MCQManagement() {
       {
         id: '2',
         question: 'Which of the following is a current asset?',
-        optionA: 'Building',
-        optionB: 'Equipment',
+        optionA: 'Land',
+        optionB: 'Buildings',
         optionC: 'Cash',
-        optionD: 'Land',
+        optionD: 'Equipment',
         correctAnswer: 'C',
         subject: 'Accounting',
         level: 'Foundation',
         explanation: 'Cash is a current asset as it can be converted to cash within one year.',
         created_at: '2024-01-15T00:00:00Z',
         updated_at: '2024-01-15T00:00:00Z'
+      },
+      {
+        id: '3',
+        question: 'What is the primary purpose of a trial balance?',
+        optionA: 'To prepare financial statements',
+        optionB: 'To check the mathematical accuracy of accounts',
+        optionC: 'To record business transactions',
+        optionD: 'To calculate profit or loss',
+        correctAnswer: 'B',
+        subject: 'Accounting',
+        level: 'Foundation',
+        explanation: 'A trial balance is used to check the mathematical accuracy of accounts.',
+        created_at: '2024-01-15T00:00:00Z',
+        updated_at: '2024-01-15T00:00:00Z'
       }
     ];
-    
     setMcqs(mockMCQs);
-    setLoadingData(false);
-  };
+  });
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && file.type === 'text/csv') {
-      setCsvFile(file);
-      parseCSV(file);
+    if (!file) return;
+
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    
+    if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+      handleExcelUpload(file);
+    } else if (fileExtension === 'csv') {
+      handleCSVUpload(file);
     } else {
-      toast.error('Please select a valid CSV file');
+      toast.error('Please upload a valid Excel (.xlsx/.xls) or CSV file');
     }
   };
 
-  const parseCSV = (file: File) => {
+  const handleExcelUpload = async (file: File) => {
+    try {
+      setIsUploading(true);
+      toast.success('Excel file uploaded successfully! Processing...');
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target?.result as ArrayBuffer);
+          const workbook = XLSX.read(data, { type: 'array' });
+          
+          // Get the first sheet
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          
+          // Convert to JSON
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          
+          if (jsonData.length < 2) {
+            toast.error('Excel file must have at least a header row and one data row');
+            setIsUploading(false);
+            return;
+          }
+          
+          // Get headers from first row
+          const headers = jsonData[0] as string[];
+          
+          // Validate headers
+          const requiredHeaders = ['Q.No', 'Question', 'Option A', 'Option B', 'Option C', 'Option D', 'Answer', 'Subject', 'Level'];
+          const missingHeaders = requiredHeaders.filter(header => !headers.includes(header));
+          
+          if (missingHeaders.length > 0) {
+            toast.error(`Missing required columns: ${missingHeaders.join(', ')}`);
+            setIsUploading(false);
+            return;
+          }
+          
+          // Process data rows
+          const processedData: CSVRow[] = [];
+          for (let i = 1; i < jsonData.length; i++) {
+            const row = jsonData[i] as any[];
+            if (row.length > 0 && row.some(cell => cell)) { // Skip empty rows
+              const rowData: CSVRow = {
+                'Q.No': row[headers.indexOf('Q.No')]?.toString() || '',
+                'Question': row[headers.indexOf('Question')]?.toString() || '',
+                'Option A': row[headers.indexOf('Option A')]?.toString() || '',
+                'Option B': row[headers.indexOf('Option B')]?.toString() || '',
+                'Option C': row[headers.indexOf('Option C')]?.toString() || '',
+                'Option D': row[headers.indexOf('Option D')]?.toString() || '',
+                'Answer': row[headers.indexOf('Answer')]?.toString() || '',
+                'Subject': row[headers.indexOf('Subject')]?.toString() || '',
+                'Level': row[headers.indexOf('Level')]?.toString() || '',
+                'Explanation': row[headers.indexOf('Explanation')]?.toString() || ''
+              };
+              processedData.push(rowData);
+            }
+          }
+          
+          if (processedData.length === 0) {
+            toast.error('No valid data found in Excel file');
+            setIsUploading(false);
+            return;
+          }
+          
+          setUploadedData(processedData);
+          setShowUploadModal(true);
+          toast.success(`Excel file processed successfully! Found ${processedData.length} questions.`);
+          
+        } catch (error) {
+          toast.error('Error processing Excel file');
+          console.error('Excel processing error:', error);
+        } finally {
+          setIsUploading(false);
+        }
+      };
+      
+      reader.readAsArrayBuffer(file);
+      
+    } catch (error) {
+      toast.error('Error reading Excel file');
+      console.error('Excel upload error:', error);
+      setIsUploading(false);
+    }
+  };
+
+  const handleCSVUpload = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
-      const text = e.target?.result as string;
-      const rows = text.split('\n');
-      const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ''));
-      
-      const data: CSVRow[] = [];
-      for (let i = 1; i < rows.length; i++) {
-        if (rows[i].trim()) {
-          const values = rows[i].split(',').map(v => v.trim().replace(/"/g, ''));
-          const row: any = {};
-          headers.forEach((header, index) => {
-            row[header] = values[index] || '';
-          });
-          data.push(row);
+      try {
+        const csv = e.target?.result as string;
+        const lines = csv.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        
+        const data: CSVRow[] = [];
+        for (let i = 1; i < lines.length; i++) {
+          if (lines[i].trim()) {
+            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+            const row: any = {};
+            headers.forEach((header, index) => {
+              row[header] = values[index] || '';
+            });
+            data.push(row as CSVRow);
+          }
         }
+        
+        setUploadedData(data);
+        setShowUploadModal(true);
+        toast.success('CSV file uploaded successfully!');
+      } catch (error) {
+        toast.error('Error processing CSV file');
+        console.error('CSV processing error:', error);
       }
-      
-      setPreviewData(data);
-      setShowPreview(true);
     };
     reader.readAsText(file);
   };
 
-  const handleUpload = async () => {
-    if (!csvFile) return;
+  const importMCQs = () => {
+    const newMCQs: MCQ[] = uploadedData.map((row, index) => ({
+      id: Date.now().toString() + index,
+      question: row['Question'],
+      optionA: row['Option A'],
+      optionB: row['Option B'],
+      optionC: row['Option C'],
+      optionD: row['Option D'],
+      correctAnswer: row['Answer'],
+      subject: row['Subject'],
+      level: row['Level'],
+      explanation: row['Explanation'],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }));
+
+    setMcqs(prev => [...prev, ...newMCQs]);
+    setShowUploadModal(false);
+    setUploadedData([]);
+    toast.success(`Successfully imported ${newMCQs.length} MCQs!`);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedMcqs.size === mcqs.length) {
+      setSelectedMcqs(new Set());
+    } else {
+      setSelectedMcqs(new Set(mcqs.map(mcq => mcq.id)));
+    }
+  };
+
+  const toggleMcqSelection = (mcqId: string) => {
+    const newSelected = new Set(selectedMcqs);
+    if (newSelected.has(mcqId)) {
+      newSelected.delete(mcqId);
+    } else {
+      newSelected.add(mcqId);
+    }
+    setSelectedMcqs(newSelected);
+  };
+
+  const deleteSelectedMcqs = () => {
+    setMcqs(prev => prev.filter(mcq => !selectedMcqs.has(mcq.id)));
+    setSelectedMcqs(new Set());
+    setShowDeleteConfirm(false);
+    toast.success(`Deleted ${selectedMcqs.size} MCQs successfully!`);
+  };
+
+  const deleteMcq = (mcqId: string) => {
+    setMcqs(prev => prev.filter(mcq => mcq.id !== mcqId));
+    setSelectedMcqs(prev => {
+      const newSelected = new Set(prev);
+      newSelected.delete(mcqId);
+      return newSelected;
+    });
+    toast.success('MCQ deleted successfully!');
+  };
+
+  const downloadTemplate = () => {
+    // Create sample data
+    const sampleData = [
+      {
+        'Q.No': '1',
+        'Question': 'What is the basic accounting equation?',
+        'Option A': 'Assets = Liabilities + Owner\'s Equity',
+        'Option B': 'Assets = Liabilities - Owner\'s Equity',
+        'Option C': 'Assets + Liabilities = Owner\'s Equity',
+        'Option D': 'Assets - Liabilities = Owner\'s Equity',
+        'Answer': 'A',
+        'Subject': 'Accounting',
+        'Level': 'Foundation',
+        'Explanation': 'The basic accounting equation is Assets = Liabilities + Owner\'s Equity. This equation must always balance and forms the foundation of double-entry bookkeeping.'
+      },
+      {
+        'Q.No': '2',
+        'Question': 'Which of the following is a current asset?',
+        'Option A': 'Land',
+        'Option B': 'Buildings',
+        'Option C': 'Cash',
+        'Option D': 'Equipment',
+        'Answer': 'C',
+        'Subject': 'Accounting',
+        'Level': 'Foundation',
+        'Explanation': 'Cash is a current asset as it can be converted to cash within one year.'
+      }
+    ];
+
+    // Create Excel file
+    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'MCQ Template');
     
-    setUploading(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Convert CSV data to MCQ format
-      const newMCQs: MCQ[] = previewData.map((row, index) => ({
-        id: `mcq-${Date.now()}-${index}`,
-        question: row['Question'] || '',
-        optionA: row['Option A'] || '',
-        optionB: row['Option B'] || '',
-        optionC: row['Option C'] || '',
-        optionD: row['Option D'] || '',
-        correctAnswer: row['Answer'] || 'A',
-        subject: row['Subject'] || 'General',
-        level: row['Level'] || 'Foundation',
-        explanation: row['Explanation'] || '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }));
-      
-      // Add to existing MCQs
-      setMcqs(prev => [...prev, ...newMCQs]);
-      
-      toast.success(`Successfully uploaded ${newMCQs.length} MCQs`);
-      setShowUploadModal(false);
-      setCsvFile(null);
-      setPreviewData([]);
-      setShowPreview(false);
-      
-    } catch (error) {
-      toast.error('Failed to upload MCQs');
-    } finally {
-      setUploading(false);
-    }
+    // Download Excel file
+    XLSX.writeFile(workbook, 'mcq-template.xlsx');
+    
+    toast.success('Excel template downloaded successfully!');
   };
 
-  const deleteMCQ = (id: string) => {
-    setMcqs(prev => prev.filter(mcq => mcq.id !== id));
-    toast.success('MCQ deleted successfully');
-  };
+  const filteredMcqs = mcqs.filter(mcq => {
+    const matchesSearch = mcq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         mcq.subject.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSubject = !filterSubject || mcq.subject === filterSubject;
+    const matchesLevel = !filterLevel || mcq.level === filterLevel;
+    
+    return matchesSearch && matchesSubject && matchesLevel;
+  });
 
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'Foundation':
-        return 'bg-primary-100 text-primary-700';
-      case 'Intermediate':
-        return 'bg-secondary-100 text-secondary-700';
-      case 'Final':
-        return 'bg-success-100 text-success-700';
-      default:
-        return 'bg-surface-100 text-surface-700';
-    }
-  };
-
-  const getSubjectColor = (subject: string) => {
-    switch (subject.toLowerCase()) {
-      case 'accounting':
-        return 'bg-blue-100 text-blue-700';
-      case 'business laws':
-        return 'bg-green-100 text-green-700';
-      case 'economics':
-        return 'bg-purple-100 text-purple-700';
-      case 'mathematics':
-        return 'bg-orange-100 text-orange-700';
-      default:
-        return 'bg-gray-100 text-gray-700';
-    }
-  };
-
-  if (loading || loadingData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner w-8 h-8"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
+  const subjects = Array.from(new Set(mcqs.map(mcq => mcq.subject)));
+  const levels = Array.from(new Set(mcqs.map(mcq => mcq.level)));
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-surface-900">MCQ Management</h1>
-            <p className="text-surface-600">Upload and manage multiple choice questions</p>
-          </div>
-          <div className="flex space-x-3">
-            <button
-              onClick={() => {
-                const link = document.createElement('a');
-                link.href = '/mcq-template.csv';
-                link.download = 'mcq-template.csv';
-                link.click();
-              }}
-              className="bg-surface-100 text-surface-700 px-4 py-2 rounded-lg hover:bg-surface-200 transition-colors flex items-center"
-            >
-              <DocumentArrowUpIcon className="h-5 w-5 mr-2" />
-              Download Template
-            </button>
-            <button
-              onClick={() => setShowUploadModal(true)}
-              className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors flex items-center"
-            >
-              <DocumentArrowUpIcon className="h-5 w-5 mr-2" />
-              Upload CSV
-            </button>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-surface-900 mb-2">MCQ Management</h1>
+          <p className="text-surface-600">Upload, manage, and organize multiple choice questions</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl p-6 shadow-soft">
-            <div className="flex items-center">
-              <div className="p-2 bg-primary-100 rounded-lg">
-                <QuestionMarkCircleIcon className="h-6 w-6 text-primary-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-surface-600">Total MCQs</p>
-                <p className="text-2xl font-bold text-surface-900">{mcqs.length}</p>
-              </div>
+        {/* Action Bar */}
+        <div className="bg-white rounded-xl shadow-soft p-6 mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+              <button
+                onClick={() => setShowUploadModal(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+              >
+                <DocumentArrowUpIcon className="h-5 w-5 mr-2" />
+                Import MCQs
+              </button>
+              
+              <button
+                onClick={downloadTemplate}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
+              >
+                <DocumentArrowDownIcon className="h-5 w-5 mr-2" />
+                Download Excel Template
+              </button>
             </div>
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-soft">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <QuestionMarkCircleIcon className="h-6 w-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-surface-600">Accounting</p>
-                <p className="text-2xl font-bold text-surface-900">{mcqs.filter(m => m.subject === 'Accounting').length}</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-soft">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <QuestionMarkCircleIcon className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-surface-600">Business Laws</p>
-                <p className="text-2xl font-bold text-surface-900">{mcqs.filter(m => m.subject === 'Business Laws').length}</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-soft">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <QuestionMarkCircleIcon className="h-6 w-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-surface-600">Other Subjects</p>
-                <p className="text-2xl font-bold text-surface-900">{mcqs.filter(m => !['Accounting', 'Business Laws'].includes(m.subject)).length}</p>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* MCQ List */}
-        <div className="bg-white rounded-xl shadow-soft">
-          <div className="p-6 border-b border-surface-200">
-            <h2 className="text-xl font-semibold text-surface-900">All MCQs</h2>
-            <p className="text-surface-600 text-sm">Manage and review uploaded questions</p>
-          </div>
-          <div className="p-6">
-            {mcqs.length > 0 ? (
-              <div className="space-y-4">
-                {mcqs.map((mcq) => (
-                  <div key={mcq.id} className="border border-surface-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-3">
-                          <div className="p-2 bg-primary-100 rounded-lg">
-                            <QuestionMarkCircleIcon className="h-5 w-5 text-primary-600" />
-                          </div>
-                          <h3 className="text-lg font-semibold text-surface-900 line-clamp-2">{mcq.question}</h3>
-                        </div>
-                        
-                        <div className="flex items-center space-x-3 mb-4">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSubjectColor(mcq.subject)}`}>
-                            {mcq.subject}
-                          </span>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(mcq.level)}`}>
-                            {mcq.level}
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3 mb-4">
-                          <div className="flex items-center space-x-2">
-                            <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                              mcq.correctAnswer === 'A' ? 'border-success-500 bg-success-500' : 'border-surface-300'
-                            }`}>
-                              {mcq.correctAnswer === 'A' && <CheckCircleIcon className="h-3 w-3 text-white" />}
-                            </span>
-                            <span className="text-sm text-surface-700">A. {mcq.optionA}</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                              mcq.correctAnswer === 'B' ? 'border-success-500 bg-success-500' : 'border-surface-300'
-                            }`}>
-                              {mcq.correctAnswer === 'B' && <CheckCircleIcon className="h-3 w-3 text-white" />}
-                            </span>
-                            <span className="text-sm text-surface-700">B. {mcq.optionB}</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                              mcq.correctAnswer === 'C' ? 'border-success-500 bg-success-500' : 'border-surface-300'
-                            }`}>
-                              {mcq.correctAnswer === 'C' && <CheckCircleIcon className="h-3 w-3 text-white" />}
-                            </span>
-                            <span className="text-sm text-surface-700">C. {mcq.optionC}</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                              mcq.correctAnswer === 'D' ? 'border-success-500 bg-success-500' : 'border-surface-300'
-                            }`}>
-                              {mcq.correctAnswer === 'D' && <CheckCircleIcon className="h-3 w-3 text-white" />}
-                            </span>
-                            <span className="text-sm text-surface-700">D. {mcq.optionD}</span>
-                          </div>
-                        </div>
-
-                        {mcq.explanation && (
-                          <p className="text-sm text-surface-600 mb-3">
-                            <strong>Explanation:</strong> {mcq.explanation}
-                          </p>
-                        )}
-
-                        <div className="flex items-center space-x-4 text-xs text-surface-500">
-                          <span>Created: {new Date(mcq.created_at).toLocaleDateString()}</span>
-                          <span>Updated: {new Date(mcq.updated_at).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex space-x-2 ml-4">
-                        <button className="bg-surface-100 text-surface-700 p-2 rounded-lg hover:bg-surface-200 transition-colors">
-                          <EyeIcon className="h-4 w-4" />
-                        </button>
-                        <button className="bg-primary-100 text-primary-700 p-2 rounded-lg hover:bg-primary-200 transition-colors">
-                          <PencilIcon className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => deleteMCQ(mcq.id)}
-                          className="bg-danger-100 text-danger-700 p-2 rounded-lg hover:bg-danger-200 transition-colors"
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-surface-600">
-                <QuestionMarkCircleIcon className="h-12 w-12 mx-auto mb-4 text-surface-400" />
-                <p>No MCQs uploaded yet</p>
-                <p className="text-sm text-surface-500 mt-1">Upload a CSV file to get started</p>
+            {selectedMcqs.size > 0 && (
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-surface-600">
+                  {selectedMcqs.size} MCQ{selectedMcqs.size !== 1 ? 's' : ''} selected
+                </span>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
+                >
+                  <TrashIcon className="h-5 w-5 mr-2" />
+                  Delete Selected
+                </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* CSV Upload Modal */}
-        {showUploadModal && (
-          <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-              <div className="fixed inset-0 bg-surface-900/75 transition-opacity" onClick={() => setShowUploadModal(false)} />
-              <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl">
-                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div className="sm:flex sm:items-start">
-                    <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <DocumentArrowUpIcon className="h-6 w-6 text-primary-600" />
-                    </div>
-                    <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                      <h3 className="text-lg font-medium leading-6 text-surface-900">
-                        Upload MCQ CSV
-                      </h3>
-                      <div className="mt-2">
-                        <p className="text-sm text-surface-600">
-                          Upload a CSV file with MCQ data. The file should have columns: Q.No, Question, Option A, Option B, Option C, Option D, Answer, Subject, Level, Explanation.
-                        </p>
-                        
-                        <div className="mt-4">
-                          <label className="block text-sm font-medium text-surface-700 mb-2">
-                            Select CSV File
-                          </label>
-                          <input
-                            type="file"
-                            accept=".csv"
-                            onChange={handleFileSelect}
-                            className="block w-full text-sm text-surface-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
-                          />
-                        </div>
+        {/* Filters and Search */}
+        <div className="bg-white rounded-xl shadow-soft p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-2">Search</label>
+              <input
+                type="text"
+                placeholder="Search questions..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-2">Subject</label>
+              <select
+                value={filterSubject}
+                onChange={(e) => setFilterSubject(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">All Subjects</option>
+                {subjects.map(subject => (
+                  <option key={subject} value={subject}>{subject}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-surface-700 mb-2">Level</label>
+              <select
+                value={filterLevel}
+                onChange={(e) => setFilterLevel(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">All Levels</option>
+                {levels.map(level => (
+                  <option key={level} value={level}>{level}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="flex items-end">
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setFilterSubject('');
+                  setFilterLevel('');
+                }}
+                className="w-full bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
+        </div>
 
-                        {csvFile && (
-                          <div className="mt-4 p-3 bg-surface-50 rounded-lg">
-                            <p className="text-sm text-surface-600">
-                              <strong>Selected file:</strong> {csvFile.name}
-                            </p>
-                            <p className="text-sm text-surface-500">
-                              Size: {(csvFile.size / 1024).toFixed(2)} KB
-                            </p>
-                          </div>
-                        )}
+        {/* MCQ List */}
+        <div className="bg-white rounded-xl shadow-soft p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-surface-900">
+              MCQs ({filteredMcqs.length})
+            </h2>
+            
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={toggleSelectAll}
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                {selectedMcqs.size === mcqs.length ? 'Deselect All' : 'Select All'}
+              </button>
+            </div>
+          </div>
+
+          {filteredMcqs.length === 0 ? (
+            <div className="text-center py-12">
+              <DocumentArrowUpIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500">No MCQs found. Import some MCQs to get started.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredMcqs.map((mcq) => (
+                <div
+                  key={mcq.id}
+                  className={`border rounded-lg p-4 transition-colors ${
+                    selectedMcqs.has(mcq.id) 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedMcqs.has(mcq.id)}
+                      onChange={() => toggleMcqSelection(mcq.id)}
+                      className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center space-x-2">
+                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                            {mcq.subject}
+                          </span>
+                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                            {mcq.level}
+                          </span>
+                        </div>
+                        
+                        <button
+                          onClick={() => deleteMcq(mcq.id)}
+                          className="text-red-600 hover:text-red-800 p-1"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </button>
                       </div>
+                      
+                      <h3 className="font-medium text-surface-900 mb-3">{mcq.question}</h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-surface-600">A:</span>
+                          <span className={`text-sm ${mcq.correctAnswer === 'A' ? 'text-green-600 font-semibold' : 'text-surface-700'}`}>
+                            {mcq.optionA}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-surface-600">B:</span>
+                          <span className={`text-sm ${mcq.correctAnswer === 'B' ? 'text-green-600 font-semibold' : 'text-surface-700'}`}>
+                            {mcq.optionB}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-surface-600">C:</span>
+                          <span className={`text-sm ${mcq.correctAnswer === 'C' ? 'text-green-600 font-semibold' : 'text-surface-700'}`}>
+                            {mcq.optionC}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm font-medium text-surface-600">D:</span>
+                          <span className={`text-sm ${mcq.correctAnswer === 'D' ? 'text-green-600 font-semibold' : 'text-surface-700'}`}>
+                            {mcq.optionD}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {mcq.explanation && (
+                        <p className="text-sm text-surface-600 bg-gray-50 p-2 rounded">
+                          <span className="font-medium">Explanation:</span> {mcq.explanation}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
-                
-                <div className="bg-surface-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button
-                    type="button"
-                    onClick={handleUpload}
-                    disabled={!csvFile || uploading}
-                    className="inline-flex w-full justify-center rounded-lg bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto"
-                  >
-                    {uploading ? 'Uploading...' : 'Upload MCQs'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowUploadModal(false)}
-                    className="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm font-semibold text-surface-900 shadow-sm ring-1 ring-inset ring-surface-300 hover:bg-surface-50 sm:mt-0 sm:w-auto"
-                  >
-                    Cancel
-                  </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Upload Modal */}
+        {showUploadModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-surface-900">Import MCQs</h3>
+                <button
+                  onClick={() => setShowUploadModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XMarkIcon className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="mb-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <h4 className="font-medium text-blue-800 mb-2">Supported File Formats:</h4>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• <strong>Excel (.xlsx, .xls)</strong> - Recommended for large datasets</li>
+                    <li>• <strong>CSV (.csv)</strong> - Simple text format</li>
+                  </ul>
                 </div>
+
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".xlsx,.xls,.csv"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  
+                  <DocumentArrowUpIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600 mb-2">
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Click to upload
+                    </button>{' '}
+                    or drag and drop
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Excel (.xlsx, .xls) or CSV files up to 10MB
+                  </p>
+                </div>
+              </div>
+
+              {uploadedData.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="font-medium text-surface-900 mb-3">
+                    Preview ({uploadedData.length} questions)
+                  </h4>
+                  
+                  <div className="border rounded-lg overflow-hidden">
+                    <div className="bg-gray-50 px-4 py-2 border-b">
+                      <div className="grid grid-cols-10 gap-2 text-xs font-medium text-gray-600">
+                        <div className="col-span-1">Q.No</div>
+                        <div className="col-span-2">Question</div>
+                        <div className="col-span-1">Option A</div>
+                        <div className="col-span-1">Option B</div>
+                        <div className="col-span-1">Option C</div>
+                        <div className="col-span-1">Option D</div>
+                        <div className="col-span-1">Answer</div>
+                        <div className="col-span-1">Subject</div>
+                        <div className="col-span-1">Level</div>
+                      </div>
+                    </div>
+                    
+                    <div className="max-h-64 overflow-y-auto">
+                      {uploadedData.slice(0, 5).map((row, index) => (
+                        <div key={index} className="px-4 py-2 border-b hover:bg-gray-50">
+                          <div className="grid grid-cols-10 gap-2 text-xs">
+                            <div className="col-span-1">{row['Q.No']}</div>
+                            <div className="col-span-2 truncate">{row['Question']}</div>
+                            <div className="col-span-1 truncate">{row['Option A']}</div>
+                            <div className="col-span-1 truncate">{row['Option B']}</div>
+                            <div className="col-span-1 truncate">{row['Option C']}</div>
+                            <div className="col-span-1 truncate">{row['Option D']}</div>
+                            <div className="col-span-1">{row['Answer']}</div>
+                            <div className="col-span-1">{row['Subject']}</div>
+                            <div className="col-span-1">{row['Level']}</div>
+                          </div>
+                        </div>
+                      ))}
+                      {uploadedData.length > 5 && (
+                        <div className="px-4 py-2 text-center text-sm text-gray-500">
+                          ... and {uploadedData.length - 5} more questions
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowUploadModal(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
+                
+                {uploadedData.length > 0 && (
+                  <button
+                    onClick={importMCQs}
+                    disabled={isUploading}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                  >
+                    {isUploading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <CheckIcon className="h-4 w-4 mr-2" />
+                        Import {uploadedData.length} MCQs
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* CSV Preview Modal */}
-        {showPreview && (
-          <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-              <div className="fixed inset-0 bg-surface-900/75 transition-opacity" onClick={() => setShowPreview(false)} />
-              <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-6xl">
-                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div className="sm:flex sm:items-start">
-                    <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-warning-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <EyeIcon className="h-6 w-6 text-warning-600" />
-                    </div>
-                    <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                      <h3 className="text-lg font-medium leading-6 text-surface-900">
-                        CSV Preview
-                      </h3>
-                      <div className="mt-2">
-                        <p className="text-sm text-surface-600 mb-4">
-                          Preview of {previewData.length} MCQs before upload
-                        </p>
-                        
-                        <div className="overflow-x-auto">
-                          <table className="min-w-full divide-y divide-surface-200">
-                            <thead className="bg-surface-50">
-                              <tr>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Q.No</th>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Question</th>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Option A</th>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Option B</th>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Option C</th>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Option D</th>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Answer</th>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Subject</th>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Level</th>
-                              </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-surface-200">
-                              {previewData.slice(0, 10).map((row, index) => (
-                                <tr key={index}>
-                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-surface-900">{row['Q.No']}</td>
-                                  <td className="px-3 py-2 text-sm text-surface-900 max-w-xs truncate">{row['Question']}</td>
-                                  <td className="px-3 py-2 text-sm text-surface-900 max-w-xs truncate">{row['Option A']}</td>
-                                  <td className="px-3 py-2 text-sm text-surface-900 max-w-xs truncate">{row['Option B']}</td>
-                                  <td className="px-3 py-2 text-sm text-surface-900 max-w-xs truncate">{row['Option C']}</td>
-                                  <td className="px-3 py-2 text-sm text-surface-900 max-w-xs truncate">{row['Option D']}</td>
-                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-surface-900">{row['Answer']}</td>
-                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-surface-900">{row['Subject']}</td>
-                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-surface-900">{row['Level']}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                        
-                        {previewData.length > 10 && (
-                          <p className="text-sm text-surface-500 mt-2">
-                            Showing first 10 rows of {previewData.length} total rows
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-surface-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button
-                    type="button"
-                    onClick={handleUpload}
-                    disabled={uploading}
-                    className="inline-flex w-full justify-center rounded-lg bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto"
-                  >
-                    {uploading ? 'Uploading...' : `Upload ${previewData.length} MCQs`}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowPreview(false)}
-                    className="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm font-semibold text-surface-900 shadow-sm ring-1 ring-inset ring-surface-300 hover:bg-surface-50 sm:mt-0 sm:w-auto"
-                  >
-                    Cancel
-                  </button>
-                </div>
+        {/* Delete Confirmation Modal */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+              <div className="flex items-center space-x-3 mb-4">
+                <ExclamationTriangleIcon className="h-6 w-6 text-red-600" />
+                <h3 className="text-lg font-semibold text-surface-900">Confirm Deletion</h3>
+              </div>
+              
+              <p className="text-surface-600 mb-6">
+                Are you sure you want to delete {selectedMcqs.size} MCQ{selectedMcqs.size !== 1 ? 's' : ''}? 
+                This action cannot be undone.
+              </p>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={deleteSelectedMcqs}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           </div>

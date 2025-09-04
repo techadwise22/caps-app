@@ -330,7 +330,7 @@ export default function InstructorDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center p-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg">
               <ArrowTrendingUpIcon className="h-8 w-8 text-primary-600 mx-auto mb-2" />
-              <h3 className="font-semibold text-surface-900 mb-1">Student Progress</h3>
+                              <h3 className="font-semibold text-surface-900 mb-1">Student Activity</h3>
               <p className="text-2xl font-bold text-primary-600">+15%</p>
               <p className="text-sm text-surface-600">vs last month</p>
             </div>
