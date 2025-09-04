@@ -14,7 +14,8 @@ import {
   UserGroupIcon,
   CogIcon,
   ArrowTrendingUpIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
 
 export default function AdminDashboard() {
@@ -215,17 +216,34 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-xl shadow-soft p-6">
           <h2 className="text-xl font-semibold text-surface-900 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {quickActions.map((action, index) => (
-              <button
-                key={index}
-                onClick={() => router.push(action.href)}
-                className={`${action.color} text-white p-4 rounded-lg text-left transition-colors`}
-              >
-                <action.icon className="h-8 w-8 mb-3" />
-                <h3 className="font-semibold mb-1">{action.title}</h3>
-                <p className="text-sm opacity-90">{action.description}</p>
-              </button>
-            ))}
+            <button 
+              onClick={() => router.push('/admin/users')}
+              className="flex items-center justify-center space-x-2 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
+            >
+              <UsersIcon className="h-5 w-5" />
+              <span>Manage Users</span>
+            </button>
+            <button 
+              onClick={() => router.push('/admin/courses')}
+              className="flex items-center justify-center space-x-2 bg-secondary-600 text-white px-6 py-3 rounded-lg hover:bg-secondary-700 transition-colors"
+            >
+              <AcademicCapIcon className="h-5 w-5" />
+              <span>Manage Courses</span>
+            </button>
+            <button 
+              onClick={() => router.push('/admin/content')}
+              className="flex items-center justify-center space-x-2 bg-success-600 text-white px-6 py-3 rounded-lg hover:bg-success-700 transition-colors"
+            >
+              <DocumentTextIcon className="h-5 w-5" />
+              <span>Manage Content</span>
+            </button>
+            <button 
+              onClick={() => router.push('/admin/mcqs')}
+              className="flex items-center justify-center space-x-2 bg-warning-600 text-white px-6 py-3 rounded-lg hover:bg-warning-700 transition-colors"
+            >
+              <QuestionMarkCircleIcon className="h-5 w-5" />
+              <span>Manage MCQs</span>
+            </button>
           </div>
         </div>
 

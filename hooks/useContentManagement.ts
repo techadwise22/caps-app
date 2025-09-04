@@ -12,7 +12,7 @@ export interface ContentItem {
   title: string;
   subtitle: string;
   description: string;
-  content_type: 'study_material' | 'video_series' | 'practice_questions' | 'lecture_notes' | 'case_study';
+  content_type: 'youtube_playlist' | 'file' | 'mcq_set';
   level: 'Foundation' | 'Intermediate' | 'Final';
   status: 'published' | 'pending_review' | 'draft';
   views_count: number;
@@ -26,24 +26,19 @@ export interface ContentItem {
 const mockContentItems: ContentItem[] = [
   {
     id: '1',
-    title: 'CA Foundation - Accounting Basics',
+    title: 'CA Foundation - Accounting Fundamentals',
     subtitle: 'Accounting',
-    description: 'Comprehensive study material covering fundamental accounting principles, double-entry bookkeeping, and financial statement preparation for CA Foundation students.',
-    content_type: 'study_material',
+    description: 'Complete video series covering accounting principles, double-entry bookkeeping, and financial statements.',
+    content_type: 'youtube_playlist',
     level: 'Foundation',
     status: 'published',
     views_count: 1250,
-    author_name: 'Prof. Priya Patel',
+    author_name: 'CA Chandrashekhar Shetty Mundkur',
     youtubeLinks: [
       {
-        title: 'Accounting Fundamentals',
-        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        description: 'Introduction to basic accounting concepts'
-      },
-      {
-        title: 'Double Entry Bookkeeping',
-        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        description: 'Understanding double entry system'
+        title: 'CA Fdn Accounts R2C - Complete Playlist',
+        url: 'https://www.youtube.com/playlist?list=PLM0TDe1dCcwe3FSEsrYm4ACWlxbg3dIet',
+        description: 'Complete CA Foundation Accounts playlist covering all fundamentals'
       }
     ],
     created_at: '2024-01-10T00:00:00Z',
@@ -51,59 +46,113 @@ const mockContentItems: ContentItem[] = [
   },
   {
     id: '2',
-    title: 'CA Intermediate - Advanced Accounting Video Series',
-    subtitle: 'Advanced Accounting',
-    description: 'Complete video series covering advanced accounting topics including consolidation, foreign exchange, and complex financial instruments.',
-    content_type: 'video_series',
-    level: 'Intermediate',
+    title: 'CA Foundation - Business Laws',
+    subtitle: 'Business Laws',
+    description: 'Complete video series covering business laws, company law, and legal frameworks.',
+    content_type: 'youtube_playlist',
+    level: 'Foundation',
     status: 'published',
-    views_count: 890,
-    author_name: 'Prof. Rajesh Verma',
+    views_count: 2100,
+    author_name: 'Dr. Rajdeep Manwani',
     youtubeLinks: [
       {
-        title: 'Advanced Accounting Part 1',
-        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        description: 'Consolidation techniques'
-      },
+        title: 'CA Fdn Law R2C - Complete Playlist',
+        url: 'https://www.youtube.com/playlist?list=PLM0TDe1dCcwfpmL4P3SBg7uC4DuV8G3kI',
+        description: 'Complete CA Foundation Business Laws playlist'
+      }
+    ],
+    created_at: '2024-01-08T00:00:00Z',
+    updated_at: '2024-01-08T00:00:00Z'
+  },
+  {
+    id: '3',
+    title: 'CA Foundation - Economics Concepts',
+    subtitle: 'Economics',
+    description: 'Complete video series covering microeconomics, macroeconomics, and economic theory.',
+    content_type: 'youtube_playlist',
+    level: 'Foundation',
+    status: 'published',
+    views_count: 890,
+    author_name: 'Dr. Divyashree',
+    youtubeLinks: [
       {
-        title: 'Advanced Accounting Part 2',
-        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        description: 'Foreign exchange accounting'
+        title: 'CA Fdn Eco R2C - Complete Playlist',
+        url: 'https://www.youtube.com/playlist?list=PLM0TDe1dCcwcozr0xl-9nBuJPowqsIgDl',
+        description: 'Complete CA Foundation Economics playlist'
+      }
+    ],
+    created_at: '2024-01-15T00:00:00Z',
+    updated_at: '2024-01-15T00:00:00Z'
+  },
+  {
+    id: '4',
+    title: 'CA Foundation - Quantitative Aptitude',
+    subtitle: 'Mathematics & Statistics',
+    description: 'Complete course covering mathematics, statistics, and quantitative methods.',
+    content_type: 'youtube_playlist',
+    level: 'Foundation',
+    status: 'published',
+    views_count: 756,
+    author_name: 'CA Sudhindra MS',
+    youtubeLinks: [
+      {
+        title: 'CA Fdn QA R2C - Complete Playlist',
+        url: 'https://www.youtube.com/playlist?list=PLM0TDe1dCcwctcAYH8Myyb-5CKdDFPJNR',
+        description: 'Complete CA Foundation Quantitative Aptitude playlist'
       }
     ],
     created_at: '2024-01-12T00:00:00Z',
     updated_at: '2024-01-12T00:00:00Z'
   },
   {
-    id: '3',
-    title: 'CA Final - Strategic Financial Management Notes',
-    subtitle: 'Strategic Financial Management',
-    description: 'Comprehensive study notes covering strategic financial management concepts, risk assessment, and investment decision-making.',
-    content_type: 'study_material',
-    level: 'Final',
-    status: 'pending_review',
-    views_count: 0,
-    author_name: 'Prof. Amit Kumar',
-    created_at: '2024-01-15T00:00:00Z',
-    updated_at: '2024-01-15T00:00:00Z'
-  },
-  {
-    id: '4',
-    title: 'CA Foundation - Business Laws Practice Questions',
-    subtitle: 'Business Laws',
-    description: 'Extensive collection of practice questions covering business laws, company law, and legal frameworks for CA Foundation examination.',
-    content_type: 'practice_questions',
+    id: '5',
+    title: 'CA Foundation - Accounting Notes',
+    subtitle: 'Accounting',
+    description: 'Comprehensive PDF notes covering basic accounting principles, journal entries, and ledger accounts.',
+    content_type: 'file',
     level: 'Foundation',
     status: 'published',
-    views_count: 2100,
-    author_name: 'Prof. Neha Singh',
-    youtubeLinks: [
-      {
-        title: 'Business Laws Overview',
-        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        description: 'Introduction to business laws'
-      }
-    ],
+    views_count: 890,
+    author_name: 'CA Chandrashekhar Shetty Mundkur',
+    created_at: '2024-01-10T00:00:00Z',
+    updated_at: '2024-01-10T00:00:00Z'
+  },
+  {
+    id: '6',
+    title: 'CA Foundation - Business Laws Notes',
+    subtitle: 'Business Laws',
+    description: 'Detailed PDF notes on business laws, company law, and legal frameworks.',
+    content_type: 'file',
+    level: 'Foundation',
+    status: 'published',
+    views_count: 756,
+    author_name: 'Dr. Rajdeep Manwani',
+    created_at: '2024-01-08T00:00:00Z',
+    updated_at: '2024-01-08T00:00:00Z'
+  },
+  {
+    id: '7',
+    title: 'CA Foundation - Accounting MCQs',
+    subtitle: 'Accounting',
+    description: 'Practice MCQs covering accounting fundamentals and concepts.',
+    content_type: 'mcq_set',
+    level: 'Foundation',
+    status: 'published',
+    views_count: 1200,
+    author_name: 'CA Chandrashekhar Shetty Mundkur',
+    created_at: '2024-01-10T00:00:00Z',
+    updated_at: '2024-01-10T00:00:00Z'
+  },
+  {
+    id: '8',
+    title: 'CA Foundation - Business Laws MCQs',
+    subtitle: 'Business Laws',
+    description: 'Practice MCQs on business laws and legal concepts.',
+    content_type: 'mcq_set',
+    level: 'Foundation',
+    status: 'published',
+    views_count: 980,
+    author_name: 'Dr. Rajdeep Manwani',
     created_at: '2024-01-08T00:00:00Z',
     updated_at: '2024-01-08T00:00:00Z'
   }

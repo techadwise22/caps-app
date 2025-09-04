@@ -41,7 +41,7 @@ export default function StudentClassesPage() {
     {
       id: '1',
       title: 'CA Foundation - Business Laws Revision',
-      instructor: 'Prof. Priya Patel',
+      instructor: 'Dr. Rajdeep Manwani',
       level: 'Foundation',
       subject: 'Business Laws',
       date: '2024-01-18',
@@ -55,7 +55,7 @@ export default function StudentClassesPage() {
     {
       id: '2',
       title: 'CA Foundation - Accounting Practice Session',
-      instructor: 'Prof. Rajesh Verma',
+      instructor: 'CA Chandrashekhar Shetty Mundkur',
       level: 'Foundation',
       subject: 'Accounting',
       date: '2024-01-20',
@@ -72,28 +72,58 @@ export default function StudentClassesPage() {
     {
       id: '3',
       title: 'CA Foundation - Economics Concepts',
-      instructor: 'Prof. Amit Kumar',
+      instructor: 'Dr. Divyashree',
       level: 'Foundation',
       subject: 'Economics',
       date: '2024-01-15',
       duration: '1 hour 45 minutes',
       views: 125,
-      recordingUrl: 'https://youtube.com/watch?v=abc123',
+      recordingUrl: 'https://www.youtube.com/playlist?list=PLM0TDe1dCcwcozr0xl-9nBuJPowqsIgDl',
       description: 'Introduction to microeconomics and macroeconomics concepts.',
       thumbnail: '/api/placeholder/300/200',
+      playlistTitle: 'CA Fdn Eco R2C',
     },
     {
       id: '4',
       title: 'CA Foundation - Mathematics Basics',
-      instructor: 'Prof. Neha Singh',
+      instructor: 'CA Sudhindra MS',
       level: 'Foundation',
       subject: 'Mathematics',
       date: '2024-01-12',
       duration: '2 hours',
       views: 98,
-      recordingUrl: 'https://youtube.com/watch?v=def456',
+      recordingUrl: 'https://www.youtube.com/playlist?list=PLM0TDe1dCcwctcAYH8Myyb-5CKdDFPJNR',
       description: 'Algebra and statistics fundamentals for CA students.',
       thumbnail: '/api/placeholder/300/200',
+      playlistTitle: 'CA Fdn QA R2C',
+    },
+    {
+      id: '5',
+      title: 'CA Foundation - Accounting Fundamentals',
+      instructor: 'CA Chandrashekhar Shetty Mundkur',
+      level: 'Foundation',
+      subject: 'Accounting',
+      date: '2024-01-10',
+      duration: '2 hours 30 minutes',
+      views: 156,
+      recordingUrl: 'https://www.youtube.com/playlist?list=PLM0TDe1dCcwe3FSEsrYm4ACWlxbg3dIet',
+      description: 'Comprehensive coverage of accounting principles, double-entry bookkeeping, and financial statements.',
+      thumbnail: '/api/placeholder/300/200',
+      playlistTitle: 'CA Fdn Accounts R2C',
+    },
+    {
+      id: '6',
+      title: 'CA Foundation - Business Laws',
+      instructor: 'Dr. Rajdeep Manwani',
+      level: 'Foundation',
+      subject: 'Business Laws',
+      date: '2024-01-08',
+      duration: '2 hours 15 minutes',
+      views: 142,
+      recordingUrl: 'https://www.youtube.com/playlist?list=PLM0TDe1dCcwfpmL4P3SBg7uC4DuV8G3kI',
+      description: 'Complete coverage of business laws, company law, and legal frameworks for CA Foundation.',
+      thumbnail: '/api/placeholder/300/200',
+      playlistTitle: 'CA Fdn Law R2C',
     },
   ];
 
@@ -108,6 +138,10 @@ export default function StudentClassesPage() {
       default:
         return 'bg-surface-100 text-surface-700';
     }
+  };
+
+  const openYouTubePlaylist = (url: string) => {
+    window.open(url, '_blank');
   };
 
   return (
@@ -250,6 +284,13 @@ export default function StudentClassesPage() {
                       <span>{classItem.subject}</span>
                     </div>
                     <p className="text-sm text-surface-600 mb-3 line-clamp-2">{classItem.description}</p>
+                    {classItem.playlistTitle && (
+                      <div className="mb-3">
+                        <span className="text-xs bg-secondary-100 text-secondary-700 px-2 py-1 rounded-full font-medium">
+                          {classItem.playlistTitle}
+                        </span>
+                      </div>
+                    )}
                     <div className="flex items-center justify-between text-sm text-surface-600 mb-3">
                       <span>Instructor: {classItem.instructor}</span>
                       <span>{classItem.duration}</span>
@@ -259,8 +300,12 @@ export default function StudentClassesPage() {
                         <EyeIcon className="h-4 w-4" />
                         <span>{classItem.views} views</span>
                       </div>
-                      <button className="bg-primary-600 text-white px-3 py-1 rounded-lg hover:bg-primary-700 transition-colors text-sm">
-                        Watch
+                      <button 
+                        onClick={() => openYouTubePlaylist(classItem.recordingUrl)}
+                        className="bg-primary-600 text-white px-3 py-1 rounded-lg hover:bg-primary-700 transition-colors text-sm flex items-center"
+                      >
+                        <PlayIcon className="h-3 w-3 mr-1" />
+                        Watch Playlist
                       </button>
                     </div>
                   </div>

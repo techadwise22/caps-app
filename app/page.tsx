@@ -226,6 +226,7 @@ export default function HomePage() {
                   <h4 className="font-semibold text-secondary-600 mb-2">CA Instructor</h4>
                   <p className="text-surface-600">Email: ca.instructor@demo.com</p>
                   <p className="text-surface-600">Password: demo123</p>
+                  <p className="text-xs text-surface-500 mt-1">Dr. Rajdeep Manwani - Law</p>
                 </div>
                 <div className="bg-white rounded-lg p-4">
                   <h4 className="font-semibold text-success-600 mb-2">Admin</h4>

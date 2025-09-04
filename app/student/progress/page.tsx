@@ -123,7 +123,7 @@ export default function StudentProgressPage() {
       title: 'Economics Concepts Live Class',
       date: '2024-01-11',
       duration: '2 hours',
-      instructor: 'Prof. Amit Kumar'
+      instructor: 'Dr. Divyashree'
     },
   ];
 
